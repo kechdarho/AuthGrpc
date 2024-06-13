@@ -1,0 +1,28 @@
+ENVIRONMENT: dev
+
+server:
+  HTTP_HOST: 0.0.0.0
+  HTTP_PORT: 8080
+
+report:
+  REPORT_HOST: 0.0.0.0
+  REPORT_PORT: 8080
+
+logger:
+  LOGGER_LEVEL: debug
+
+sqlite:
+  SQLITE_PATH:
+
+cache:
+  DEFAULT_EXPIRATION_CACHE: 2m
+  CLEANUP_INTERVAL_CACHE: 2m
+
+grpc:
+  GRPC_PORT: 44044
+  GRPC_TIMEOUT: 10h
+
+jwt:
+  accessTokenTTL: 24h
+  refreshTokenTTL: 720h
+  privateKeyPath: private_key.pem
