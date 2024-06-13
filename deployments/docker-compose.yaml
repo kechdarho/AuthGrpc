@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app_container
+    build:
+        context: ../../../awesomeProject/auth
+        dockerfile: build/backend/Dockerfile
+        args:
+          LDFLAGS: ${LDFLAGS}
+    env_file:
+        - ../.env
+    restart: unless-stopped
+    ports:
+      -
+    depends_on:
+        - migrator
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Wanderer2801
+      POSTGRES_DB: Auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    environment:
+      REDIS_PASSWORD: Wanderer2801
+
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  backend:
