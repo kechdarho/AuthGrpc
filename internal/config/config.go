@@ -1,12 +1,12 @@
 package config
 
 import (
+	myecdsa "AuthGrpc/internal/lib/encryption/ecdsa"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io"
 	"log"
 	"os"
-	myecdsa "sso/internal/lib/encryption/ecdsa"
 	"sync"
 	"time"
 )
@@ -21,13 +21,15 @@ const (
 
 type (
 	Config struct {
-		Environment EnvType    `yaml:"ENVIRONMENT"`
-		HTTP        HTTP       `yaml:"server"`
-		Sqlite      Sqlite     `yaml:"sqlite"`
-		Cache       Cache      `yaml:"cache"`
-		Logger      Logger     `yaml:"logger"`
-		GRPC        GRPCConfig `yaml:"grpc"`
-		JWT         JWT        `yaml:"jwt"`
+		Environment   EnvType       `yaml:"ENVIRONMENT"`
+		HTTP          HTTP          `yaml:"server"`
+		Sqlite        Sqlite        `yaml:"sqlite"`
+		Cache         Cache         `yaml:"cache"`
+		Logger        Logger        `yaml:"logger"`
+		GRPC          GRPCConfig    `yaml:"grpc"`
+		JWT           JWT           `yaml:"jwt"`
+		ProfileServer ProfileServer `yaml:"profileServer"`
+		Profile       Profile       `yaml:"profile"`
 	}
 
 	HTTP struct {
@@ -49,7 +51,7 @@ type (
 	}
 
 	Sqlite struct {
-		Path string `yaml:"storage_path" env-required:"true"`
+		Path string `yaml:"SQLITE_PATH" env-required:"true"`
 	}
 
 	Logger struct {
@@ -61,6 +63,14 @@ type (
 		RefreshTokenTTL time.Duration `yaml:"refreshTokenTTL"`
 		PrivateKeyPath  string        `yaml:"privateKeyPath"`
 		SecretKey       []byte
+	}
+	ProfileServer struct {
+		Host string `yaml:"host"`
+		Port int    `yaml:"port"`
+	}
+	Profile struct {
+		CPUProfilePath string `yaml:"cpu_profile_path"`
+		MemProfilePath string `yaml:"mem_profile_path"`
 	}
 )
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Storage struct {
@@ -17,7 +18,11 @@ func New(ctx context.Context, storagePath string) (*Storage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
+	err = createTables(ctx, db)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	go ClearTokens(ctx, db)
 	return &Storage{db: db}, nil
 }
 

@@ -1,12 +1,21 @@
-package cache
+package local
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 )
 
 func (c *Cache) Set(ctx context.Context, key string, value interface{}, duration time.Duration) error {
+	if requestID, ok := ctx.Value("requestID").(string); ok {
+		fmt.Println("Request ID:", requestID)
+	}
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
 
 	var expiration int64
 	if duration == 0 {
@@ -38,6 +47,15 @@ func (c *Cache) Set(ctx context.Context, key string, value interface{}, duration
 }
 
 func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
+	if requestID, ok := ctx.Value("requestID").(string); ok {
+		fmt.Println("Request ID:", requestID)
+	}
+	select {
+	case <-ctx.Done():
+		return nil, false
+	default:
+	}
+
 	c.RLock()
 	defer c.RUnlock()
 
@@ -55,6 +73,15 @@ func (c *Cache) Get(ctx context.Context, key string) (interface{}, bool) {
 }
 
 func (c *Cache) Delete(ctx context.Context, key string) error {
+	if requestID, ok := ctx.Value("requestID").(string); ok {
+		fmt.Println("Request ID:", requestID)
+	}
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
 	c.Lock()
 	defer c.Unlock()
 

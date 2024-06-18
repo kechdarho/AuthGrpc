@@ -1,14 +1,14 @@
 package app
 
 import (
+	"AuthGrpc/internal/cache/local"
 	"context"
 
+	grpcapp "AuthGrpc/internal/app/grpc"
+	"AuthGrpc/internal/config"
+	"AuthGrpc/internal/pkg/storage/sqlite"
+	"AuthGrpc/internal/services/auth"
 	"log/slog"
-	grpcapp "sso/internal/app/grpc"
-	"sso/internal/cache"
-	"sso/internal/config"
-	"sso/internal/pkg/storage/sqlite"
-	"sso/internal/services/auth"
 )
 
 type App struct {
@@ -20,7 +20,7 @@ func New(ctx context.Context, log *slog.Logger, cfg *config.Config) *App {
 	if err != nil {
 		panic(err)
 	}
-	cache, err := cache.InitCache(ctx, cfg.Cache.DefaultExpiration, cfg.Cache.CleanupInterval)
+	cache, err := local.InitCache(ctx, cfg.Cache.DefaultExpiration, cfg.Cache.CleanupInterval)
 	if err != nil {
 		panic(err)
 	}

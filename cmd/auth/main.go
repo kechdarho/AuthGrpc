@@ -1,12 +1,14 @@
 package main
 
 import (
+	"AuthGrpc/internal/app"
+	"AuthGrpc/internal/app/pprof"
+	"AuthGrpc/internal/config"
+	"AuthGrpc/internal/lib/profiler"
 	"context"
 	"log/slog"
 	"os"
 	"os/signal"
-	"sso/internal/app"
-	"sso/internal/config"
 	"syscall"
 )
 
@@ -26,6 +28,20 @@ func main() {
 	)
 	application := app.New(ctx, log, cfg)
 	go application.GRPCServer.MustRun()
+
+	profApplication := pprofapp.New(cfg.ProfileServer.Host, cfg.ProfileServer.Port)
+	go profApplication.Start()
+
+	profilerConfig := profiler.ProfilerConfig{
+		CPUProfilePath: cfg.Profile.CPUProfilePath,
+		MemProfilePath: cfg.Profile.MemProfilePath,
+	}
+	appProfiler := profiler.NewProfiler(profilerConfig)
+
+	if err := appProfiler.StartCPUProfile(); err != nil {
+		panic(err)
+	}
+	defer appProfiler.StopCPUProfile()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
